@@ -1,0 +1,7 @@
+plotly
+shiny
+pandas
+matplotlib
+shinywidgets
+jcamp
+os
