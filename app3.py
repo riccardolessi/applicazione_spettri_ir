@@ -5,13 +5,14 @@ import numpy as np
 import sqlite3
 import json
 from lib import spettri
+from lib.spettro import Spettro
 
 app_ui = ui.page_navbar(
     ui.nav_panel("Inserimento", 
         ui.input_file("file_upload", "Carica un file", multiple=False),
-        ui.output_text("file_info"),
         ui.input_action_button("save", "Salva lo spettro"),
-        ui.output_plot("spettro_plot"),
+        ui.output_text('info_molecola'),
+        ui.output_plot("spettro_plot")
     ),
     ui.nav_panel("Visualizza",
         ui.layout_sidebar(
@@ -34,8 +35,6 @@ app_ui = ui.page_navbar(
 )
 
 def server(input, output, session):
-    spettro_corrente = reactive.value(None)
-
     # Aggiorna il dropdown con gli spettri disponibili
     @reactive.effect
     @reactive.event(input.page)
@@ -45,6 +44,7 @@ def server(input, output, session):
 
     # Legge il file e restituisce i dati dello spettro
     @reactive.calc
+    @reactive.event(input.file_upload)
     def spettro():
         file = input.file_upload()
         if not file or len(file) == 0:
@@ -52,53 +52,47 @@ def server(input, output, session):
 
         file_path = file[0]['datapath']
         nome_file = file[0]['name']
+        
+        spettro_oggetto = Spettro(file_path, nome_file)
 
-        dati_spettro = jcamp.jcamp_readfile(file_path)
-        metadati = spettri.get_dati_spettro(nome_file)
+        data = spettro_oggetto.get_dati_spettro()
+        
+        duplicato = spettro_oggetto.check_duplicati_db()
 
-        return {"dati": dati_spettro, "metadati": metadati}
+        if duplicato:
+            ui.notification_show(
+                "molecola già presente nel DB",
+                type="error",
+                duration=4,
+                close_button=False,
+            )
+            ui.update_action_button(
+                "save",
+                disabled = True
+            )
 
-    
+        return data
+
     @render.text
     @reactive.event(input.file_upload)
-    def file_info():
-        grafico = spettro()
-        spettro_corrente.set(spettro())
-        return grafico
+    def info_molecola():
+        dati = spettro()
+        return dati
 
     # Disegna il grafico dello spettro caricato
     @render.plot
     @reactive.event(input.file_upload)
     def spettro_plot():
         dati = spettro()
-        if not dati:
-            return None  # Evita errori se il dato è nullo
         
-        data = dati['dati']
-        if 'x' not in data or 'y' not in data:
-            return None  # Evita errori se il formato è sbagliato
-        
-        # Estrae i dati dell'asse x e y
-        x = np.array(data['x'])
-        y = np.array(data['y'])
-
-        # Crea il grafico
-        fig, ax = plt.subplots(figsize=(10, 5))
-        ax.plot(x, y, label="Spettro DX", color="blue")
-        ax.set_xlabel("Frequenza / Lunghezza d'onda")
-        ax.set_ylabel("Intensità")
-        ax.set_title("Grafico dello Spettro DX")
-        ax.legend()
-        ax.grid()
-
-        ax.invert_xaxis()
+        fig = spettri.render_plot(dati)
 
         return fig
 
     @reactive.effect
     @reactive.event(input.save)
     def save():
-        result = spettri.save_spettro(spettro_corrente())
+        result = spettri.save_spettro(spettro())
         if not result:
             ui.notification_show(
                 result,
@@ -118,20 +112,7 @@ def server(input, output, session):
         scelta = input.select_molecola()
         spettro_scelto = spettri.get_spettro(scelta)
 
-        # Estrae i dati dell'asse x e y
-        x = spettro_scelto["dati_spettro"]['x']
-        y = spettro_scelto["dati_spettro"]['y']
-
-        # Crea il grafico
-        fig, ax = plt.subplots(figsize=(10, 5))
-        ax.plot(x, y, label="Spettro DX", color="blue")
-        ax.set_xlabel("Frequenza / Lunghezza d'onda")
-        ax.set_ylabel("Intensità")
-        ax.set_title(f"Spettro della molecola: {spettro_scelto['nome_molecola']}")
-        ax.legend()
-        ax.grid()
-
-        ax.invert_xaxis()
+        fig = spettri.render_plot(spettro_scelto)
 
         return fig
 
