@@ -53,24 +53,9 @@ def server(input, output, session):
         file_path = file[0]['datapath']
         nome_file = file[0]['name']
         
-        spettro_oggetto = Spettro(file_path, nome_file)
-
-        data = spettro_oggetto.get_dati_spettro()
+        session.spettro_oggetto = Spettro(file_path, nome_file)
+        data = session.spettro_oggetto.get_dati_spettro()
         
-        duplicato = spettro_oggetto.check_duplicati_db()
-
-        if duplicato:
-            ui.notification_show(
-                "molecola già presente nel DB",
-                type="error",
-                duration=4,
-                close_button=False,
-            )
-            ui.update_action_button(
-                "save",
-                disabled = True
-            )
-
         return data
 
     @render.text
@@ -92,6 +77,21 @@ def server(input, output, session):
     @reactive.effect
     @reactive.event(input.save)
     def save():
+        duplicato = session.spettro_oggetto.check_duplicati_db()
+
+        if duplicato:
+            ui.notification_show(
+                "molecola già presente nel DB",
+                type="error",
+                duration=4,
+                close_button=False,
+            )
+            ui.update_action_button(
+                "save",
+                disabled = True
+            )
+            return None
+
         result = spettri.save_spettro(spettro())
         if not result:
             ui.notification_show(
