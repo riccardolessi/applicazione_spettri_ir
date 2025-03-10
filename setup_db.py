@@ -17,6 +17,15 @@ def setup_db():
     )
     """)
 
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS bande_gruppi_funzionali (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        gruppo_funzionale TEXT NOT NULL,
+        min INTEGER NOT NULL,
+        max INTEGER NOT NULL
+    )
+    """)
+
     conn.commit()
     conn.close()
     print("Database creato con successo!")

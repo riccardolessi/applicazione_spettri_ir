@@ -1,40 +1,44 @@
 from shiny import App, ui, render, reactive
-import jcamp
-import matplotlib.pyplot as plt
-import numpy as np
-import sqlite3
-import json
 from lib import spettri
 from lib.spettro import Spettro
+from lib import bande_gruppi_funzionali as bande_def
+from shinywidgets import output_widget
+from partials import inserimento, visualizza
+from module import counter_ui, counter_server
+from modules.inserimento_spettro import inserimento_ui
 
 app_ui = ui.page_navbar(
-    ui.nav_panel("Inserimento", 
-        ui.input_file("file_upload", "Carica un file", multiple=False),
-        ui.input_action_button("save", "Salva lo spettro"),
-        ui.output_text('info_molecola'),
-        ui.output_plot("spettro_plot")
+    inserimento.inserimento_ui(),
+    visualizza.visualizza_ui(),
+
+    ui.nav_panel("Bande gruppi funzionali",
+        ui.output_data_frame("bande"),
+        counter_ui("counter1", "Counter 1"),
     ),
-    ui.nav_panel("Visualizza",
-        ui.layout_sidebar(
-            ui.sidebar(
-                ui.input_select(
-                    "select_molecola",
-                    "Seleziona la molecola da visualizzare",
-                    choices = []
-                ),
-                ui.input_action_button(
-                    "visualizza_molecola",
-                    "Visualizza la molecola"
-                )
-            ),
-        ui.output_plot("spettro_selezionato_plot"),
-        ),
+
+    ui.nav_panel("Bande Gruppi Funzionali Tabella",
+        ui.h2("Tabella modificabile (solo sessione)"),
+        ui.output_data_frame("table")
     ),
     title="App with navbar",  
     id="page"
 )
 
 def server(input, output, session):
+    @reactive.effect
+    def selectize_bande():
+        bande_disponibili = bande_def.get_gruppi_funzionali(False)
+        ui.update_selectize(
+            "selectize_bande",
+            choices={x[0]: x[1] for x in bande_disponibili}
+        )
+        
+    @render.data_frame
+    def bande():
+        df = bande_def.get_gruppi_funzionali(True)
+
+        return render.DataTable(df)
+
     # Aggiorna il dropdown con gli spettri disponibili
     @reactive.effect
     @reactive.event(input.page)
@@ -92,7 +96,8 @@ def server(input, output, session):
             )
             return None
 
-        result = spettri.save_spettro(spettro())
+        result = session.spettro_oggetto.save_spettro()
+        
         if not result:
             ui.notification_show(
                 result,
@@ -112,9 +117,17 @@ def server(input, output, session):
         scelta = input.select_molecola()
         spettro_scelto = spettri.get_spettro(scelta)
 
-        fig = spettri.render_plot(spettro_scelto)
+        bande_selezionate = input.selectize_bande()
+
+        fig = spettri.render_plot(spettro_scelto, bande_selezionate)
 
         return fig
 
-app = App(app_ui, server)
+    # Mostrare la tabella modificabile
+    @render.data_frame
+    def table():
+        return render.DataTable(bande_def.get_gruppi_funzionali(True))
 
+    counter_server("counter1", starting_value=5)
+
+app = App(app_ui, server)

@@ -1,37 +1,13 @@
 import sqlite3
 import json
-import pandas as pd
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+from lib import bande_gruppi_funzionali as bd
+import pandas as pd
 
 base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 db_path = os.path.join(base_dir, "spettri.db")
-
-def get_dati_spettro(filename):
-    namelist = filename.split('_')
-    name = namelist[2]
-    
-    # Veririca del tipo di prova
-    if (name[:3].lower() == "std"):
-        tipologia = "STD"
-    elif(name[:3].lower() == "inc"):
-        tipologia = "INC"
-    else:
-        tipologia = "Sconosciuta"
-        return None
-
-    data = {
-        'data': namelist[1],
-        'molecola': name[3:],
-        'tipologia_prova': tipologia,
-        'tipologia_spettrometro': namelist[3].split('.')[0], # Splitta "ATR.dx" in "ATR"
-    }
-
-    nome_molecola_db = nome_spettro(data)
-    data['nome_molecola_db'] = nome_molecola_db
-
-    return data
 
 # Funzione per ottenere tutti gli spettri caricati nel db
 def get_spettri():
@@ -69,40 +45,12 @@ def get_spettro(spettro_id):
         print("Nessuno spettro trovato con l'id fornito.")
         return None
 
-# Funzione per salvare lo spettro
-def save_spettro(dati_spettro):
-    if not dati_spettro:
-        return None
-
-    # Serializza in JSON i dati
-    try:
-        dati_json = json.dumps({
-            "x": dati_spettro["dati"]["x"].tolist(),
-            "y": dati_spettro["dati"]["y"].tolist()
-        })
-    except Exception as e:
-        return f"Errore nella serializzazione dei dati: {e}"
-
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO spettri (nome, data_spettro, tipologia_spettrometro, tipologia_prova, dati) VALUES(?, ?, ?, ?, ?)",
-    (dati_spettro["metadati"]["nome_molecola_db"], dati_spettro["metadati"]["data_ora"], dati_spettro["metadati"]["tipologia_spettrometro"], dati_spettro["metadati"]["tipologia_prova"], dati_json))
-
-    conn.commit()
-    conn.close()
-
-    return "Molecola inserita nel database con successo"
+def render_plot(dati, bande_selezionate=None):
+    lista_bande = None
+    if bande_selezionate:
+        lista_bande = bd.get_gruppi_funzionali_selezionati(bande_selezionate)
 
 
-# Funzione per evitare di caricare duplicati nel DB
-def check_duplicati(nome, data):
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-    cursor.execute("SELECT id FROM spettri WHERE nome = ? AND data_spettro = ?", (nome, data))
-    result = cursor.fetchall()
-    conn.close()
-
-def render_plot(dati):
     if not dati:
             return None  # Evita errori se il dato è nullo
         
@@ -115,13 +63,18 @@ def render_plot(dati):
     y = np.array(data['y'])
 
     # Crea il grafico
-    fig, ax = plt.subplots(figsize=(10, 5))
-    ax.plot(x, y, label=f"{dati['metadati']['molecola']}", color="blue")
-    ax.set_xlabel("Frequenza / Lunghezza d'onda")
-    ax.set_ylabel("Intensità")
-    ax.set_title(f"Spettro della molecola: {dati['metadati']['molecola']}")
-    ax.legend()
-    ax.grid()
+    fig, ax = plt.subplots()
+    ax.plot(x, y, label=f"{dati['metadati']['molecola']}", color="red")
+    # ax.set_xlabel("Frequenza / Lunghezza d'onda")
+    # ax.set_ylabel("Intensità")
+
+    if lista_bande:
+        for banda_singola in lista_bande:
+            ax.axvspan(banda_singola[2], banda_singola[3], color="lightgreen", alpha=0.5)
+
+    # ax.set_title(f"Spettro della molecola: {dati['metadati']['molecola']}")
+    # ax.legend()
+    # ax.grid()
 
     ax.invert_xaxis()
 
