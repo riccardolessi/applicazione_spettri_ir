@@ -65,11 +65,11 @@ def render_plot(dati, bande_selezionate = None, spettro_confronto = None):
 
     # Crea il grafico
     fig, ax = plt.subplots()
-    ax.plot(x, y, label=f"{dati['metadati']['molecola'].split('/')[0]}", color="C1")
+    ax.plot(x, y, label=f"{dati['metadati']['molecola']}", color="k")
     if spettro_confronto:
         x1 = np.array(spettro_confronto["dati"]["x"])
         y1 = np.array(spettro_confronto["dati"]["y"])
-        ax.plot(x1, y1, label=f"{spettro_confronto['metadati']['molecola'].split('/')[0]}", color = "C0")
+        ax.plot(x1, y1, label=f"{spettro_confronto['metadati']['molecola']}", color = "C0")
     # ax.set_xlabel("Frequenza / Lunghezza d'onda")
     # ax.set_ylabel("Intensità")
 

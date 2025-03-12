@@ -15,9 +15,13 @@ app_ui = ui.page_navbar(
 
     ui.nav_panel("Bande gruppi funzionali",
         ui.output_data_frame("bande"),
+        ui.input_action_button(
+            "bottone",
+            "bottone"
+        )
     ),
 
-    title="App with navbar",  
+    title="App with navbar",
     id="page"
 )
 
@@ -32,14 +36,23 @@ def server(input, output, session):
             "selectize_bande",
             choices = {x[0]: x[1] for x in bande_disponibili}
         )
-        
+
     # renderizza le bande presenti nel db nella sezione bande gruppi
     # funzionali come df
     @render.data_frame
     def bande():
         df = bande_def.get_gruppi_funzionali(True)
 
+        session.bande_gruppi_funzionali = df
+
         return render.DataTable(df, editable = True)
+
+    @reactive.effect
+    @reactive.event(input.bottone)
+    def _():
+        # print(bande.data_view())
+        session.bande_gruppi_funzionali = bande.data_view()
+        print(session.bande_gruppi_funzionali)
 
     # Aggiorna il dropdown con gli spettri disponibili
     @reactive.effect
@@ -59,7 +72,7 @@ def server(input, output, session):
 
         file_path = file[0]['datapath']
         nome_file = file[0]['name']
-        
+
         session.spettro_oggetto = Spettro(file_path, nome_file)
         data = session.spettro_oggetto.get_dati_spettro()
 
@@ -77,7 +90,7 @@ def server(input, output, session):
     @reactive.event(input.file_upload)
     def spettro_plot():
         dati = session.spettro_oggetto.get_dati_spettro()
-        
+
         fig = spettri.render_plot(dati)
 
         return fig
@@ -101,9 +114,9 @@ def server(input, output, session):
                 disabled = True
             )
             return None
-        
+
         result = session.spettro_oggetto.save_spettro()
-        
+
         ui.notification_show(
             result['message'],
             type= result['type'],
@@ -132,20 +145,22 @@ def server(input, output, session):
             @render.image
             def image():
                 return None
-            
+
         # Recupera la molecola di confronto, se selezionata
         spettro_confronto = spettri.get_spettro(input.select_confronto()) if input.confronto() else None
 
-        # Recupera le bande selezionate        
+        # Recupera le bande selezionate
         bande_selezionate = input.selectize_bande()
+
+        print(bande_selezionate)
 
         # Genera e restituisce il grafico
         fig = spettri.render_plot(spettro_scelto, bande_selezionate, spettro_confronto)
         return fig
-    
+
     # Per verificare se c'è il file dell'immagine della molecola
     def file_presente(cartella, nome_file):
         return any(f.stem == nome_file for f in Path(cartella).iterdir())
-  
+
 
 app = App(app_ui, server)
