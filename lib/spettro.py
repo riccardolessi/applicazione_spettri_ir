@@ -28,7 +28,7 @@ class Spettro:
         if not dati_spettro:
             return {
                 "message": "C'è un problema con il caricamento dei dati",
-                "status": "error"
+                "type": "error"
             }
 
         # Serializza in JSON i dati
@@ -40,7 +40,7 @@ class Spettro:
         except Exception as e:
             return {
                 "message": f"Errore nella serializzazione dei dati: {e}",
-                "status": "error"
+                "type": "error"
                 }
 
         conn = sqlite3.connect(db_path)
@@ -53,7 +53,7 @@ class Spettro:
 
         return {
             "message": "Molecola inserita nel database con successo",
-            "status": "success"
+            "type": "message"
         }
 
 

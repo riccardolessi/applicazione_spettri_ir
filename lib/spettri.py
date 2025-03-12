@@ -47,7 +47,7 @@ def get_spettro(spettro_id):
         return None
 
 # Renderizza il plot nella schermata di visualizzazione
-def render_plot(dati, bande_selezionate=None):
+def render_plot(dati, bande_selezionate = None, spettro_confronto = None):
     lista_bande = None
     if bande_selezionate:
         lista_bande = bd.get_gruppi_funzionali_selezionati(bande_selezionate)
@@ -65,7 +65,11 @@ def render_plot(dati, bande_selezionate=None):
 
     # Crea il grafico
     fig, ax = plt.subplots()
-    ax.plot(x, y, label=f"{dati['metadati']['molecola']}", color="red")
+    ax.plot(x, y, label=f"{dati['metadati']['molecola'].split('/')[0]}", color="C1")
+    if spettro_confronto:
+        x1 = np.array(spettro_confronto["dati"]["x"])
+        y1 = np.array(spettro_confronto["dati"]["y"])
+        ax.plot(x1, y1, label=f"{spettro_confronto['metadati']['molecola'].split('/')[0]}", color = "C0")
     # ax.set_xlabel("Frequenza / Lunghezza d'onda")
     # ax.set_ylabel("Intensità")
 
@@ -73,9 +77,11 @@ def render_plot(dati, bande_selezionate=None):
         for banda_singola in lista_bande:
             ax.axvspan(banda_singola[2], banda_singola[3], color="lightgreen", alpha=0.5)
 
-    # ax.set_title(f"Spettro della molecola: {dati['metadati']['molecola']}")
-    # ax.legend()
-    # ax.grid()
+    if not spettro_confronto:
+        ax.set_title(f"Spettro della molecola: {dati['metadati']['molecola'].split('/')[0]}")
+    else: ax.set_title(f"Spettro delle molecole: {dati['metadati']['molecola'].split('/')[0]} - {spettro_confronto['metadati']['molecola'].split('/')[0]}")
+    ax.legend()
+    ax.grid()
 
     ax.invert_xaxis()
 

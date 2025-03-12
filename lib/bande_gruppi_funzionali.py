@@ -42,7 +42,7 @@ def get_gruppi_funzionali_selezionati(lista_id):
     bande = cursor.fetchall()
     conn.close()
 
-    print("bande" , bande)
+    # print("bande" , bande)
 
     return bande
 

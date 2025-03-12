@@ -47,6 +47,7 @@ def server(input, output, session):
     def _():
         spettri_disponibili = spettri.get_spettri()
         ui.update_select("select_molecola", choices=spettri_disponibili)
+        ui.update_select("select_confronto", choices=spettri_disponibili)
 
     # Legge il file e restituisce i dati dello spettro
     @reactive.calc
@@ -61,7 +62,7 @@ def server(input, output, session):
         
         session.spettro_oggetto = Spettro(file_path, nome_file)
         data = session.spettro_oggetto.get_dati_spettro()
-        
+
         return data
 
     # Renderizza i dati della molecola per debug
@@ -102,27 +103,21 @@ def server(input, output, session):
             return None
         
         result = session.spettro_oggetto.save_spettro()
-
-        if result.status == "error":
-            ui.notification_show(
-                result.message,
-                type="error",
-                duration=4,
-            )
-        else:
-            ui.notification_show(
-                result.message,
-                type="message",
-                duration=4,
-            )
+        
+        ui.notification_show(
+            result['message'],
+            type= result['type'],
+            duration=4,
+        )
 
     # Funzione per visualizzare il plot della molecola nella schermata
     # di visualizzazione
     @render.plot
     @reactive.event(input.visualizza_molecola)
     def spettro_selezionato_plot():
-        scelta = input.select_molecola()
-        spettro_scelto = spettri.get_spettro(scelta)
+        # Recupera la molecola selezionata
+        molecola_scelta = input.select_molecola()
+        spettro_scelto = spettri.get_spettro(molecola_scelta)
 
         cartella = here / "images"
         nome_molecola = spettro_scelto['metadati']['molecola'].split("/")[0]
@@ -137,11 +132,15 @@ def server(input, output, session):
             @render.image
             def image():
                 return None
-        
+            
+        # Recupera la molecola di confronto, se selezionata
+        spettro_confronto = spettri.get_spettro(input.select_confronto()) if input.confronto() else None
+
+        # Recupera le bande selezionate        
         bande_selezionate = input.selectize_bande()
 
-        fig = spettri.render_plot(spettro_scelto, bande_selezionate)
-
+        # Genera e restituisce il grafico
+        fig = spettri.render_plot(spettro_scelto, bande_selezionate, spettro_confronto)
         return fig
     
     # Per verificare se c'è il file dell'immagine della molecola
