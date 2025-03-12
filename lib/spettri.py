@@ -47,7 +47,7 @@ def get_spettro(spettro_id):
         return None
 
 # Renderizza il plot nella schermata di visualizzazione
-def render_plot(dati, bande_selezionate = None, spettro_confronto = None):
+def render_plot(dati, bande_selezionate = None, spettro_confronto = None, colore_molecola = "k", colore_standard = "C0"):
     lista_bande = None
     if bande_selezionate:
         lista_bande = bd.get_gruppi_funzionali_selezionati(bande_selezionate)
@@ -65,11 +65,11 @@ def render_plot(dati, bande_selezionate = None, spettro_confronto = None):
 
     # Crea il grafico
     fig, ax = plt.subplots()
-    ax.plot(x, y, label=f"{dati['metadati']['molecola']}", color="k")
+    ax.plot(x, y, label=f"{dati['metadati']['molecola']}", color=colore_molecola)
     if spettro_confronto:
         x1 = np.array(spettro_confronto["dati"]["x"])
         y1 = np.array(spettro_confronto["dati"]["y"])
-        ax.plot(x1, y1, label=f"{spettro_confronto['metadati']['molecola']}", color = "C0")
+        ax.plot(x1, y1, label=f"{spettro_confronto['metadati']['molecola']}", color = colore_standard)
     # ax.set_xlabel("Frequenza / Lunghezza d'onda")
     # ax.set_ylabel("Intensità")
 

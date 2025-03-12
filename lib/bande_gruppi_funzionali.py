@@ -42,8 +42,6 @@ def get_gruppi_funzionali_selezionati(lista_id):
     bande = cursor.fetchall()
     conn.close()
 
-    # print("bande" , bande)
-
     return bande
 
 # C'è un problema che la lista id mi viene ritornata come ('2', ) e mi dà errore
