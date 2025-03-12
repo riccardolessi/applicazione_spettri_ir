@@ -9,11 +9,10 @@ def visualizza_ui():
                     "Seleziona la molecola da visualizzare",
                     choices = []
                 ),
-                ui.input_selectize(  
+                ui.input_checkbox_group(  
                     "selectize_bande",  
                     "Seleziona i gruppi da visualizzare:",
-                    choices = [],
-                    multiple=True,  
+                    choices = [],  
                 ),
                 ui.input_action_button(
                     "visualizza_molecola",
@@ -22,4 +21,5 @@ def visualizza_ui():
             ),
         ui.output_plot("spettro_selezionato_plot"),
         ),
+        ui.output_image("image")
     )

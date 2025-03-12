@@ -3,6 +3,7 @@ import sqlite3
 import os
 import json
 
+# Path del DB
 base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 db_path = os.path.join(base_dir, "spettri.db")
 
@@ -25,7 +26,10 @@ class Spettro:
         dati_spettro = self.get_dati_spettro()
 
         if not dati_spettro:
-            return None
+            return {
+                "message": "C'è un problema con il caricamento dei dati",
+                "status": "error"
+            }
 
         # Serializza in JSON i dati
         try:
@@ -34,7 +38,10 @@ class Spettro:
                 "y": dati_spettro["dati"]["y"].tolist()
             })
         except Exception as e:
-            return f"Errore nella serializzazione dei dati: {e}"
+            return {
+                "message": f"Errore nella serializzazione dei dati: {e}",
+                "status": "error"
+                }
 
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
@@ -44,7 +51,10 @@ class Spettro:
         conn.commit()
         conn.close()
 
-        return "Molecola inserita nel database con successo"
+        return {
+            "message": "Molecola inserita nel database con successo",
+            "status": "success"
+        }
 
 
     # Funzione per verificare nel DB se la molecola è già presente

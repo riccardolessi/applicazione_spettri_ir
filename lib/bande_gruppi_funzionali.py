@@ -27,9 +27,12 @@ def get_gruppi_funzionali(need_df):
             return bande
 
 def get_gruppi_funzionali_selezionati(lista_id):
-    # Estrarre solo i valori in una lista
-    id_values = [int(i[0]) for i in lista_id]
+    # Creo id_values per convertire un tuple in list
+    id_values = []
 
+    for id in lista_id:
+        id_values.append(id)
+    
     # Generare i segnaposto per la query (?, ?, ?)
     placeholders = ','.join(['?'] * len(id_values))
 
