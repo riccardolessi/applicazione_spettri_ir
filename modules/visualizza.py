@@ -6,9 +6,7 @@ here = Path(__file__).parent.parent
 
 @module.ui
 def visualizza_ui():
-    return ui.nav_panel(
-        "Visualizza",
-        ui.layout_sidebar(
+    return (ui.layout_sidebar(
             ui.sidebar(
                 ui.input_select(
                     "select_molecola",
@@ -62,7 +60,7 @@ def visualizza_ui():
             ),
             ui.output_plot("spettro_selezionato_plot"),
         ),
-        ui.output_image("image")
+        ui.output_image("image"),
     )
 
 @module.server

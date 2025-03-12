@@ -12,8 +12,10 @@ def setup_db():
         data_spettro DATE,
         tipologia_spettrometro TEXT,
         tipologia_prova TEXT,
+        fonte_spettri int,
         dati TEXT NOT NULL,  -- JSON con i valori x e y
-        data DATE DEFAULT CURRENT_TIMESTAMP
+        data DATE DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (fonte_spettri) REFERENCES fonti(id)
     )
     """)
 
@@ -23,6 +25,13 @@ def setup_db():
         gruppo_funzionale TEXT NOT NULL,
         min INTEGER NOT NULL,
         max INTEGER NOT NULL
+    )
+    """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS fonti (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT
     )
     """)
 

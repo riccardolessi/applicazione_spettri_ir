@@ -7,10 +7,19 @@ from modules.visualizza import *
 from modules.inserimento import *
 
 app_ui = ui.page_navbar(
-    # inserimento.inserimento_ui(),
-    inserimento_ui("inserimento_ui"),
-    visualizza_ui("visualizza_ui"),
-    gruppi_funzionali_ui("gruppi_funzionali_ui"),
+    ui.nav_panel(
+        "Inserimento",
+        inserimento_ui("inserimento_ui"),
+    ),
+    ui.nav_panel(
+        "Visualizzazione",
+        visualizza_ui("visualizza_ui"),
+    ),
+    ui.nav_panel(
+        "Gruppi funzionali",
+        gruppi_funzionali_ui("gruppi_funzionali_ui"),
+    ),
+    
 
     title="App with navbar",
     id="page"

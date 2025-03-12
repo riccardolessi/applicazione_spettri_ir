@@ -2,7 +2,7 @@ from shiny import module, ui, render, reactive
 
 @module.ui
 def inserimento_ui():
-    return ui.nav_panel("Inserimento", 
+    return (
         ui.input_file("file_upload", "Carica un file", multiple=False),
         ui.input_action_button("save", "Salva lo spettro"),
         ui.output_text('info_molecola'),
@@ -25,6 +25,12 @@ def inserimento_server(input, output, session, Spettro, spettri):
 
         session.spettro_oggetto = Spettro(file_path, nome_file)
         data = session.spettro_oggetto.get_dati_spettro()
+
+        # Abilita il bottone anche se precedentemente disabilitato
+        ui.update_action_button(
+                "save",
+                disabled = False
+            )
 
         return data
 

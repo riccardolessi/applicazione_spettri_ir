@@ -3,10 +3,8 @@ from shiny import module, ui, render
 @module.ui
 def gruppi_funzionali_ui():
     return (
-        ui.nav_panel("Bande gruppi funzionali",
             ui.output_data_frame("bande")
         )
-    )
 
 @module.server
 # renderizza le bande presenti nel db nella sezione bande gruppi
