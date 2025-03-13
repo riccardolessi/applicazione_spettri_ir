@@ -22,7 +22,7 @@ class Spettro:
     # Funzione per ottenere i dati dello spettro (grafico + nome)
     def get_dati_spettro(self):
         
-        self.check_nome_db(self.nome_file)
+        self.check_nome_db()
 
         return {"dati": self.dati_spettro, "metadati": self.data}
 
@@ -99,7 +99,7 @@ class Spettro:
     
     # Funzione per verificare e creare le info della molecola
     # Implementare i controlli per evitare problemi nell'inserimento nel db
-    def check_nome_db(self, name):
+    def check_nome_db(self):
         namelist = self.nome_file.split("_")
         name = namelist[2]
         data = self.dati_spettro['date'] + " " + self.dati_spettro['time']

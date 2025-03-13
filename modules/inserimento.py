@@ -78,9 +78,9 @@ def inserimento_server(input, output, session, Spettro, spettri, fonti):
         nome_file = session.spettro_oggetto.return_nome_file()
         namelist = nome_file.split("_")
         
-        nome_molecola = namelist[2][3:].upper() or ""
-        data_creazione_spettro = namelist[1] or ""
-        tipo_supporto = namelist[3].split(".")[0].lower() or ""
+        nome_molecola = namelist[2][3:].upper()
+        data_creazione_spettro = namelist[1]
+        tipo_supporto = namelist[3].split(".")[0].lower()
         if (tipo_supporto != "atr" and tipo_supporto != "nujol"):
             tipo_supporto = ""
 
@@ -180,7 +180,7 @@ def inserimento_server(input, output, session, Spettro, spettri, fonti):
             fonte_spettro = input.fonte()
 
             risultato_salvataggio = spettro_oggetto.save_spettro(fonte_spettro)
-
+            print(risultato_salvataggio)
             ui.notification_show(
                 risultato_salvataggio.get("message", "Salvataggio completato."),
                 type=risultato_salvataggio.get("type", "success"),
