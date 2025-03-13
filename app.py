@@ -2,6 +2,7 @@ from shiny import App, ui, render, reactive
 from lib import spettri
 from lib.spettro import Spettro
 from lib import bande_gruppi_funzionali as bande_def
+from lib import fonti
 from modules.gruppi_funzionali import *
 from modules.visualizza import *
 from modules.inserimento import *
@@ -29,7 +30,8 @@ def server(input, output, session):
     inserimento_server(
         "inserimento_ui",
         Spettro = Spettro,
-        spettri = spettri
+        spettri = spettri,
+        fonti = fonti
     )
 
     visualizza_server(

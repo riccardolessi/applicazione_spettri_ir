@@ -14,6 +14,11 @@ class Spettro:
         self.dati_spettro = jcamp.jcamp_readfile(file_path)
         self.nome_file = nome_file
 
+    # Funzione per restituire il nome del file
+    def return_nome_file(self):
+        name = self.nome_file
+        return name
+
     # Funzione per ottenere i dati dello spettro (grafico + nome)
     def get_dati_spettro(self):
         
@@ -22,7 +27,7 @@ class Spettro:
         return {"dati": self.dati_spettro, "metadati": self.data}
 
     # Funzione per salvare lo spettro nel DB
-    def save_spettro(self):
+    def save_spettro(self, fonte_spettro = 1):
         dati_spettro = self.get_dati_spettro()
 
         if not dati_spettro:
@@ -45,8 +50,8 @@ class Spettro:
 
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO spettri (nome, data_spettro, tipologia_spettrometro, tipologia_prova, dati) VALUES(?, ?, ?, ?, ?)",
-        (dati_spettro["metadati"]["nome_molecola_db"], dati_spettro["metadati"]["data_ora"], dati_spettro["metadati"]["tipologia_spettrometro"], dati_spettro["metadati"]["tipologia_prova"], dati_json))
+        cursor.execute("INSERT INTO spettri (nome, data_spettro, tipologia_spettrometro, tipologia_prova, dati, fonte_spettri) VALUES(?, ?, ?, ?, ?, ?)",
+        (dati_spettro["metadati"]["nome_molecola_db"], dati_spettro["metadati"]["data_ora"], dati_spettro["metadati"]["tipologia_spettrometro"], dati_spettro["metadati"]["tipologia_prova"], dati_json, fonte_spettro))
 
         conn.commit()
         conn.close()

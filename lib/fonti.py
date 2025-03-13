@@ -13,5 +13,3 @@ def get_fonti():
     conn.close()
 
     return fonti
-
-print(get_fonti())
