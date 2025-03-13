@@ -14,6 +14,4 @@ def gruppi_funzionali_server(input, output, session, bande_def):
     def bande():
         df = bande_def.get_gruppi_funzionali(True)
 
-        session.bande_gruppi_funzionali = df
-
         return render.DataTable(df)
