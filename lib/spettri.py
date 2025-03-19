@@ -26,7 +26,7 @@ def get_spettri():
 def get_spettro(spettro_id):
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
-    cursor.execute("SELECT nome, dati FROM spettri WHERE id = ?", (spettro_id,))
+    cursor.execute("SELECT spettri.nome, spettri.dati, fonti.nome FROM spettri LEFT JOIN fonti on fonti.id = spettri.fonte_spettri WHERE spettri.id = ?;", (spettro_id,))
     row = cursor.fetchone()
     conn.close()
 
@@ -37,7 +37,8 @@ def get_spettro(spettro_id):
                 "metadati": {
                     "molecola": row[0]
                 },
-                "dati": spettro_data
+                "dati": spettro_data,
+                "fonte_spettro": row[2]
             }
         except json.JSONDecodeError as e:
             print(f"Errore nel decodificare i dati JSON")

@@ -1,5 +1,5 @@
 from shiny import module, ui, render, reactive
-from datetime import datetime
+from datetime import datetime, date
 
 # IR_2022-03-30_STDMETILPIDROSSIBENZOATO_ATR.dx
 
@@ -7,33 +7,10 @@ from datetime import datetime
 def inserimento_ui():
     return (
         ui.input_file("file_upload", "Carica un file", multiple=False),
-        # ui.panel_conditional(
-        #     "input.file_upload",
-        #     ui.card(
-        #         ui.input_text(
-        #             "nome_molecola",
-        #             "Inserisci il nome della molecola"
-        #         ),
-        #         ui.input_date(
-        #             "data_creazione_spettro",
-        #             "Inserisci la data di creazione dello spettro"
-        #         ),
-        #         ui.input_select(
-        #             "tipo_supporto",
-        #             "Seleziona il supporto utilizzato",
-        #             choices = ["ATR", "Nujol"]
-        #         ),
-        #         ui.input_select(
-        #             "fonte",
-        #             "Seleziona la fonte dello spettro",
-        #             choices = []
-        #         ),
-        #     ),
-        # ),
         ui.output_ui("conditional"),
         ui.input_action_button("save", "Salva lo spettro"),
-        ui.output_text('info_molecola'),
         ui.output_plot("spettro_plot"),
+        ui.output_text('info_molecola'),
         #ui.input_dark_mode(mode="dark"),
     )
 
@@ -69,17 +46,18 @@ def inserimento_server(input, output, session, Spettro, spettri, fonti):
     @reactive.event(input.file_upload)
     def info_molecola():
         return spettro() or "Nessun dato disponibile"
-    
+
     @render.ui
     @reactive.event(input.file_upload)
     def conditional():
         fontee = fonte_spettri()
-        
+
         nome_file = session.spettro_oggetto.return_nome_file()
         namelist = nome_file.split("_")
-        
+
         nome_molecola = namelist[2][3:].upper()
-        data_creazione_spettro = namelist[1]
+
+        data_creazione_spettro = is_valid_date(namelist[1])
         tipo_supporto = namelist[3].split(".")[0].lower()
         if (tipo_supporto != "atr" and tipo_supporto != "nujol"):
             tipo_supporto = ""
@@ -87,11 +65,11 @@ def inserimento_server(input, output, session, Spettro, spettri, fonti):
         tipo_prova = namelist[2][:3].lower()
         if (tipo_prova == "inc"):
             tipo_prova = "Incognita"
-        elif (tipo_prova == "std"):        
+        elif (tipo_prova == "std"):
             tipo_prova = "Standard"
         else:
             tipo_prova = ""
-        
+
         return (
             ui.card(
                 ui.input_text(
@@ -113,7 +91,7 @@ def inserimento_server(input, output, session, Spettro, spettri, fonti):
                 ui.input_select(
                     "tipo_prova",
                     "Seleziona il tipo di prova",
-                    choices = ["Incognita", "Sperimentale"],
+                    choices = ["Incognita", "Standard"],
                     selected = f"{tipo_prova}"
                 ),
                 ui.input_select(
@@ -137,13 +115,13 @@ def inserimento_server(input, output, session, Spettro, spettri, fonti):
                 close_button=True,
             )
             return
-        
+
         try:
             dati_spettro = session.spettro_oggetto.get_dati_spettro()
             if dati_spettro is None:
                 return None
             return spettri.render_plot(dati_spettro)
-        
+
         except Exception as e:
             print(f"Errore nel rendering del grafico: {e}")
             return None
@@ -163,7 +141,7 @@ def inserimento_server(input, output, session, Spettro, spettri, fonti):
                 close_button=True,
             )
             return
-        
+
         try:
             esiste_gia = spettro_oggetto.check_duplicati_db()
 
@@ -202,3 +180,13 @@ def inserimento_server(input, output, session, Spettro, spettri, fonti):
         opzioni_fonti = {x[0]: x[1] for x in fonte_spettri}
 
         return opzioni_fonti
+
+
+
+def is_valid_date(date_string):
+    try:
+        return datetime.strptime(date_string, "%Y-%m-%d").date()
+    except ValueError:
+        print("c'è un errore: " , ValueError)
+        today = date.today().strftime("%Y-%m-%d")
+        return today
