@@ -35,6 +35,25 @@ def setup_db():
     )
     """)
 
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS gruppi_funzionali (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        gruppo_funzionale TEXT NOT NULL,
+        smile_gruppo TEXT
+    )
+    """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS bande_gruppi_funzionali_due (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        gruppo_funzionale TEXT NOT NULL,
+        min INTEGER NOT NULL,
+        max INTEGER NOT NULL,
+        id_gruppo INT,
+        FOREIGN KEY (id_gruppo) REFERENCES gruppi_funzionali(id)
+    )
+    """)
+
     conn.commit()
     conn.close()
     print("Database creato con successo!")

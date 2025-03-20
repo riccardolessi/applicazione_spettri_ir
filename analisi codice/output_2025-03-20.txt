@@ -1,0 +1,112 @@
+File: ./app.py
+  Numero di funzioni: 1
+  Numero di righe di codice (non vuote): 61
+  Numero di commenti: 0
+  Numero di reactive: 0
+  Numero di render: 0
+
+File: ./conta_py.py
+  Numero di funzioni: 3
+  Numero di righe di codice (non vuote): 56
+  Numero di commenti: 13
+  Numero di reactive: 1
+  Numero di render: 1
+
+File: ./setup_db.py
+  Numero di funzioni: 1
+  Numero di righe di codice (non vuote): 37
+  Numero di commenti: 1
+  Numero di reactive: 0
+  Numero di render: 0
+
+File: ./modules/gruppi_funzionali.py
+  Numero di funzioni: 3
+  Numero di righe di codice (non vuote): 14
+  Numero di commenti: 2
+  Numero di reactive: 0
+  Numero di render: 1
+
+File: ./modules/query.py
+  Numero di funzioni: 3
+  Numero di righe di codice (non vuote): 26
+  Numero di commenti: 0
+  Numero di reactive: 1
+  Numero di render: 1
+
+File: ./modules/singola_molecola.py
+  Numero di funzioni: 10
+  Numero di righe di codice (non vuote): 93
+  Numero di commenti: 14
+  Numero di reactive: 3
+  Numero di render: 4
+
+File: ./modules/inserimento.py
+  Numero di funzioni: 9
+  Numero di righe di codice (non vuote): 158
+  Numero di commenti: 12
+  Numero di reactive: 7
+  Numero di render: 3
+
+File: ./modules/visualizza.py
+  Numero di funzioni: 9
+  Numero di righe di codice (non vuote): 124
+  Numero di commenti: 16
+  Numero di reactive: 3
+  Numero di render: 3
+
+File: ./lib/spettri.py
+  Numero di funzioni: 3
+  Numero di righe di codice (non vuote): 74
+  Numero di commenti: 12
+  Numero di reactive: 0
+  Numero di render: 0
+
+File: ./lib/fonti.py
+  Numero di funzioni: 1
+  Numero di righe di codice (non vuote): 12
+  Numero di commenti: 1
+  Numero di reactive: 0
+  Numero di render: 0
+
+File: ./lib/__init__.py
+  Numero di funzioni: 0
+  Numero di righe di codice (non vuote): 0
+  Numero di commenti: 0
+  Numero di reactive: 0
+  Numero di render: 0
+
+File: ./lib/spettro.py
+  Numero di funzioni: 8
+  Numero di righe di codice (non vuote): 95
+  Numero di commenti: 14
+  Numero di reactive: 0
+  Numero di render: 0
+
+File: ./lib/db.py
+  Numero di funzioni: 1
+  Numero di righe di codice (non vuote): 16
+  Numero di commenti: 1
+  Numero di reactive: 0
+  Numero di render: 0
+
+File: ./lib/bande_gruppi_funzionali.py
+  Numero di funzioni: 2
+  Numero di righe di codice (non vuote): 38
+  Numero di commenti: 6
+  Numero di reactive: 0
+  Numero di render: 0
+
+File: ./partials/inserimento.py
+  Numero di funzioni: 1
+  Numero di righe di codice (non vuote): 9
+  Numero di commenti: 0
+  Numero di reactive: 0
+  Numero di render: 0
+
+File: ./partials/visualizza.py
+  Numero di funzioni: 1
+  Numero di righe di codice (non vuote): 38
+  Numero di commenti: 0
+  Numero di reactive: 0
+  Numero di render: 0
+
