@@ -19,3 +19,36 @@ def query(query):
     df = pd.DataFrame(rows, columns=columns)
 
     return df
+import sqlite3
+
+def tabelle():
+    # Connessione al database SQLite
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    # Variabile per raccogliere i risultati
+    result = ""
+
+    # 1. Ottenere tutte le tabelle
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+    tabelle = cursor.fetchall()
+
+    # Aggiungere le tabelle alla stringa di risultato
+    result += "<b>Tabelle nel database:</b><br>"
+    for tabella in tabelle:
+        result += f"<b>{tabella[0]}</b><br>"
+
+        # 2. Ottenere le colonne per ciascuna tabella
+        cursor.execute(f"PRAGMA table_info({tabella[0]});")
+        colonne = cursor.fetchall()
+
+        for colonna in colonne:
+            result += f"  {colonna[1]} (Tipo: {colonna[2]})<br>"
+        
+        result += "<br>"
+
+    # Chiudere la connessione
+    conn.close()
+
+    # Restituire il risultato come stringa
+    return result

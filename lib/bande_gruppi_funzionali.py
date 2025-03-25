@@ -17,12 +17,12 @@ def get_gruppi_funzionali(need_df):
 
     if bande:
         if need_df:
-            return pd.DataFrame(bande, columns=['id', 'gruppo_funzionale', 'min', 'max'] )
+            return pd.DataFrame(bande, columns=['id', 'gruppo_funzionale', 'min', 'max', 'id_gruppo'] )
         else:
             return bande
     else:
         if need_df:
-            return pd.DataFrame(columns=['id', 'gruppo_funzionale', 'min', 'max'])
+            return pd.DataFrame(columns=['id', 'gruppo_funzionale', 'min', 'max', 'id_gruppo'])
         else:
             return bande
 
@@ -41,7 +41,34 @@ def get_gruppi_funzionali_selezionati(lista_id):
     cursor.execute(f"SELECT * FROM bande_gruppi_funzionali WHERE id IN ({placeholders})", id_values)
     bande = cursor.fetchall()
     conn.close()
-
+    
     return bande
 
-# C'è un problema che la lista id mi viene ritornata come ('2', ) e mi dà errore
+def get_gruppi_new():
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * from gruppi_funzionali ORDER BY gruppo_funzionale ASC")
+    gruppi_funzionali = cursor.fetchall()
+    conn.close()
+
+    return gruppi_funzionali
+
+def get_gruppi_funzionali_selezionati_new(lista_id):
+    # Creo id_values per convertire un tuple in list
+    id_values = []
+
+    for id in lista_id:
+        id_values.append(id)
+    
+    # Generare i segnaposto per la query (?, ?, ?)
+    placeholders = ','.join(['?'] * len(id_values))
+
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT * FROM bande_gruppi_funzionali WHERE id_gruppo IN ({placeholders}) ORDER BY gruppo_funzionale ASC", id_values)
+    bande = cursor.fetchall()
+    conn.close()
+    
+    output = {banda[0]: banda[1] for banda in bande}
+
+    return output

@@ -1,4 +1,5 @@
 from shiny import module, reactive, render, ui
+from htmltools import HTML, div
 
 @module.ui
 def query_output_ui():
@@ -14,7 +15,8 @@ def query_output_ui():
             ui.layout_columns(
                 ui.input_action_button("run", "Run", class_="btn btn-primary"),
             ),
-            ui.output_data_frame("results"),    
+            ui.output_data_frame("results"),
+            ui.output_ui("struttura_db")
         ),
     )
 
@@ -30,3 +32,9 @@ def query_output_server(input, output, session, db):
         result = db.query(qry)
         
         return result
+    
+    @render.ui
+    def struttura_db():
+        struttura = db.tabelle()
+
+        return div(HTML(struttura))

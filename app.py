@@ -9,6 +9,7 @@ from modules.visualizza import *
 from modules.inserimento import *
 from modules.singola_molecola import *
 from modules.query import *
+from modules.request import *
 
 app_ui = ui.page_navbar(
     ui.nav_panel(
@@ -30,6 +31,10 @@ app_ui = ui.page_navbar(
     ui.nav_panel(
         "Query DB",
         query_output_ui("query_output_ui"),
+    ),
+    ui.nav_panel(
+        "Richieste Pub Chem",
+        request_ui("request_ui"),
     ),
     
 
@@ -65,6 +70,10 @@ def server(input, output, session):
     query_output_server(
         "query_output_ui",
         db = db
+    )
+
+    request_server(
+        "request_ui"
     )
 
 app = App(app_ui, server)

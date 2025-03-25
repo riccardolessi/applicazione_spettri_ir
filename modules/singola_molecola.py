@@ -19,6 +19,11 @@ def singola_molecola_ui():
                     "Seleziona i gruppi da visualizzare:",
                     choices = [],  
                 ),
+                ui.input_checkbox_group(  
+                    "selectize_bande_new",  
+                    "Seleziona le bande da visualizzare:",
+                    choices = [],  
+                ),
                 ui.input_action_button(
                     "visualizza_molecola",
                     "Visualizza la molecola"
@@ -38,12 +43,23 @@ def singola_molecola_server(input, output, session, bande_def, spettri):
     # nella schermata di visualizzazione
     @reactive.effect
     def selectize_bande():
-        gruppi_funzionali = bande_def.get_gruppi_funzionali(False)
+        #gruppi_funzionali = bande_def.get_gruppi_funzionali(False)
+        gruppi_funzionali = bande_def.get_gruppi_new()
 
         # Converte da tuple a dizionario
         opzioni_bande = {x[0]: x[1] for x in gruppi_funzionali}
-
+        
         ui.update_checkbox_group("selectize_bande", choices=opzioni_bande)
+
+    # TEST
+    @reactive.effect
+    @reactive.event(input.selectize_bande)
+    def selectize_bande_new():
+        gruppi_funzionali = input.selectize_bande()
+
+        bande_gruppi = bande_def.get_gruppi_funzionali_selezionati_new(gruppi_funzionali)
+        
+        ui.update_checkbox_group("selectize_bande_new", choices=bande_gruppi)
 
     # Aggiorna il dropdown con gli spettri disponibili
     @reactive.effect
@@ -71,16 +87,13 @@ def singola_molecola_server(input, output, session, bande_def, spettri):
             return f"Fonte dello spettro: {spettro_molecola['fonte_spettro']}"
 
         # Recupera le bande selezionate
-        bande_selezionate = input.selectize_bande()
+        bande_selezionate = input.selectize_bande_new()
         
         # Controlla se esiste un'immagine associata alla molecola e la renderizza
         @render.image
         def image():
             img = render_molecola_image(spettro_molecola)
             return img
-
-        # Recupera le bande selezionate
-        bande_selezionate = input.selectize_bande()
 
         # Genera e restituisce il grafico
         return spettri.render_plot(
