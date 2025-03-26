@@ -7,7 +7,11 @@ import pandas as pd
 base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 db_path = os.path.join(base_dir, "spettri.db")
 
+# Query al DB, NON USARE IN PRODUZIONE
 def query(query):
+    if query == "":
+        return pd.DataFrame()
+
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     cursor.execute(query)
@@ -21,6 +25,8 @@ def query(query):
     return df
 import sqlite3
 
+
+# Query al DB per vedere tabelle e colonne
 def tabelle():
     # Connessione al database SQLite
     conn = sqlite3.connect(db_path)

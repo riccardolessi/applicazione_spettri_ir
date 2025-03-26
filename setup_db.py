@@ -27,8 +27,12 @@ def setup_db():
         max INTEGER NOT NULL,
         id_gruppo INT,
         FOREIGN KEY (id_gruppo) REFERENCES gruppi_funzionali(id)
+        fonte_bande INT,
+        FOREIGN KEY (fonte_bande) REFERENCES fonti(id)
     )
     """)
+    # Il database attuale non ha la foregin key, perché aggiunta in seguito
+    # ha solo il campo fonte_bande, ma il funzionamento è lo stesso
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS fonti (

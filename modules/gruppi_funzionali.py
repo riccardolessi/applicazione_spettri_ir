@@ -13,5 +13,5 @@ def gruppi_funzionali_server(input, output, session, bande_def):
     @render.data_frame
     def bande():
         df = bande_def.get_gruppi_funzionali(True)
-
+        
         return render.DataTable(df)

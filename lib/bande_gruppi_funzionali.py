@@ -11,18 +11,28 @@ db_path = os.path.join(base_dir, "spettri.db")
 def get_gruppi_funzionali(need_df):
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
-    cursor.execute("SELECT * from bande_gruppi_funzionali")
+    cursor.execute("""SELECT 
+        bande_gruppi_funzionali.id, 
+        bande_gruppi_funzionali.gruppo_funzionale,
+        bande_gruppi_funzionali.min,
+        bande_gruppi_funzionali.max,
+        gruppi_funzionali.gruppo_funzionale,
+        fonti.nome
+        FROM bande_gruppi_funzionali
+        JOIN gruppi_funzionali ON bande_gruppi_funzionali.id_gruppo = gruppi_funzionali.id
+        JOIN fonti ON bande_gruppi_funzionali.fonte_bande = fonti.id
+        """)
     bande = cursor.fetchall()
     conn.close()
 
     if bande:
         if need_df:
-            return pd.DataFrame(bande, columns=['id', 'gruppo_funzionale', 'min', 'max', 'id_gruppo'] )
+            return pd.DataFrame(bande, columns=['id', 'nome', 'min', 'max', 'gruppo funzionale', "fonte"] )
         else:
             return bande
     else:
         if need_df:
-            return pd.DataFrame(columns=['id', 'gruppo_funzionale', 'min', 'max', 'id_gruppo'])
+            return pd.DataFrame(columns=['id', 'nome', 'min', 'max', 'gruppo funzionale', "fonte"])
         else:
             return bande
 
