@@ -5,3 +5,4 @@ modificare tabella bande_gruppi_funzionali.
 3. Modificare la tabella bande_gruppi_funzionali in modo da avere:
     range delle bande, id gruppo funzionale e fonte della banda
 
+sito web: erdplus
