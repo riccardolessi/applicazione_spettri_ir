@@ -10,11 +10,16 @@ from modules.inserimento import *
 from modules.singola_molecola import *
 from modules.query import *
 from modules.request import *
+from modules.inserimento_multiplo import *
 
 app_ui = ui.page_navbar(
     ui.nav_panel(
         "Inserimento",
         inserimento_ui("inserimento_ui"),
+    ),
+    ui.nav_panel(
+        "Inserimento Multiplo",
+        inserimento_multiplo_ui("inserimento_multiplo_ui")
     ),
     ui.nav_panel(
         "Visualizzazione",
@@ -45,6 +50,13 @@ app_ui = ui.page_navbar(
 def server(input, output, session):
     inserimento_server(
         "inserimento_ui",
+        Spettro = Spettro,
+        spettri = spettri,
+        fonti = fonti
+    )
+
+    inserimento_multiplo_server(
+        "inserimento_multiplo_ui",
         Spettro = Spettro,
         spettri = spettri,
         fonti = fonti

@@ -65,6 +65,8 @@ class Spettro:
     # Funzione per verificare nel DB se la molecola è già presente
     # Verifica con nome + data e ora
     def check_duplicati_db(self):
+        self.check_nome_db()
+        
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
         cursor.execute("SELECT COUNT(*) FROM spettri WHERE nome = ? AND data_spettro = ?", (self.data['nome_molecola_db'], self.data['data_ora']))
