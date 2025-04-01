@@ -25,12 +25,11 @@ def request_ui():
 
 # Logica del server
 @module.server
-def request_server(input, output, session):
+def request_server(input, output, session, bande_def, spettri):
     @render.text
     @reactive.event(input.cerca_molecola)
     def result():
         data = get_api_data(input.input())
-        print(data)
         return str(data)
     
     @render.ui
@@ -75,32 +74,21 @@ def generate_2d_image_with_highlight(smiles: str, smarts):
     patt = Chem.MolFromSmarts(smarts)
     
     # Troviamo la corrispondenza del pattern (gli atomi che corrispondono)
-    hit_ats = list(mol.GetSubstructMatch(patt))
-    pippo = list(mol.GetSubstructMatches(patt))
+    hit_ats_input = list(mol.GetSubstructMatches(patt))
     
-    #hit_ats = convertTupleToList(hit_ats)
-    print("hit ats: ", hit_ats)
-    print("pippo: ", pippo)
-    pippo2 = []
-    for x in pippo:
-        print("x: ", convertTupleToList(x))
-        pippo2.append(convertTupleToList(x))
-        print("..." , pippo2)
+    hit_ats = []
+    for x in hit_ats_input:
+        hit_ats.append(convertTupleToList(x))
+
     # Troviamo i legami da evidenziare
     hit_bonds = []
     for bond in patt.GetBonds():
-        for hit_at in pippo2:
+        for hit_at in hit_ats:
             aid1 = hit_at[bond.GetBeginAtomIdx()]
             aid2 = hit_at[bond.GetEndAtomIdx()]
-            print("aid1: ", aid1)
-            print("aid2: ", aid2)
             hit_bonds.append(mol.GetBondBetweenAtoms(aid1, aid2).GetIdx())
-            print("hit bonds: ", hit_bonds)
-
     
-    
-    hit_ats = list(itertools.chain(*pippo2))
-    print(hit_ats)
+    hit_ats = list(itertools.chain(*hit_ats))
     # Crea un oggetto MolDraw2DSVG per generare il disegno SVG
     d = rdMolDraw2D.MolDraw2DSVG(500, 500)  # Impostiamo una dimensione di 500x500 px per il disegno
     

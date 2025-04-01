@@ -14,6 +14,11 @@ def singola_molecola_ui():
                     "Seleziona la molecola da visualizzare",
                     choices = []
                 ),
+                ui.input_slider(
+                    "slider_bande",
+                    "Seleziona la larghezza delle bande singole",
+                    0, 50, 10
+                ),
                 ui.input_checkbox_group(  
                     "selectize_bande",  
                     "Seleziona i gruppi da visualizzare:",
@@ -101,7 +106,8 @@ def singola_molecola_server(input, output, session, bande_def, spettri):
             bande_selezionate, 
             None,
             "red", 
-            None
+            None,
+            input.slider_bande()
         )
     
         # Per verificare se c'è il file dell'immagine della molecola

@@ -4,6 +4,7 @@ from lib.spettro import Spettro
 from lib import bande_gruppi_funzionali as bande_def
 from lib import fonti
 from lib import db
+from lib import test
 from modules.gruppi_funzionali import *
 from modules.visualizza import *
 from modules.inserimento import *
@@ -11,6 +12,7 @@ from modules.singola_molecola import *
 from modules.query import *
 from modules.request import *
 from modules.inserimento_multiplo import *
+from modules.test import *
 
 app_ui = ui.page_navbar(
     ui.nav_panel(
@@ -40,6 +42,10 @@ app_ui = ui.page_navbar(
     ui.nav_panel(
         "Richieste Pub Chem",
         request_ui("request_ui"),
+    ),
+    ui.nav_panel(
+        "Test Analisi Molecola",
+        test_ui("test_ui")
     ),
     
 
@@ -85,7 +91,14 @@ def server(input, output, session):
     )
 
     request_server(
-        "request_ui"
+        "request_ui",
+        bande_def = bande_def,
+        spettri = spettri
+    )
+
+    test_server(
+        "test_ui",
+        test = test
     )
 
 app = App(app_ui, server)

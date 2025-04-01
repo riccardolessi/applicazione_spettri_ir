@@ -48,10 +48,28 @@ def get_spettro(spettro_id):
         return None
 
 # Renderizza il plot nella schermata di visualizzazione
-def render_plot(dati, bande_selezionate = None, spettro_confronto = None, colore_molecola = "k", colore_standard = "C0"):
+def render_plot(dati, bande_selezionate = None, spettro_confronto = None, colore_molecola = "k", colore_standard = "C0", larghezza_bande_singole = None):
     lista_bande = None
     if bande_selezionate:
         lista_bande = bd.get_gruppi_funzionali_selezionati(bande_selezionate)
+    
+    
+    # Ciclo for per modificare le bande singole (quelle larghe 2)
+    # per allargarle come da input slider utente
+    if larghezza_bande_singole and bande_selezionate:
+        lista_bande_array = []
+        for banda in lista_bande:
+            banda_array = []
+            for x in banda:
+                banda_array.append(x)
+                
+            if (int(banda_array[3]) - int(banda_array[2]) == 2):
+                banda_array[3] = banda_array[3] + larghezza_bande_singole - 1
+                banda_array[2] = banda_array[2] - larghezza_bande_singole + 1
+            
+            lista_bande_array.append(banda_array)
+        
+        lista_bande = lista_bande_array
 
     if not dati:
             return None  # Evita errori se il dato è nullo
