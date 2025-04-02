@@ -10,13 +10,21 @@ base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 db_path = os.path.join(base_dir, "spettri.db")
 
 # Funzione per ottenere tutti gli spettri caricati nel db (solo nome)
-def get_spettri():
+def get_spettri(need_smiles = False):
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
-    cursor.execute("SELECT id, nome FROM spettri ORDER BY nome ASC")
+    
+    if need_smiles:
+        cursor.execute("SELECT id, nome, smiles FROM spettri ORDER BY nome ASC")
+    else:
+        cursor.execute("SELECT id, nome FROM spettri ORDER BY nome ASC")
+    
     spettri = cursor.fetchall()
     conn.close()
 
+    if need_smiles:
+        return spettri
+    
     # Trasforma la lista di tuple in un dizionario
     result = {f"{id_}": f"{name}" for id_, name in spettri}
 
@@ -52,7 +60,6 @@ def render_plot(dati, bande_selezionate = None, spettro_confronto = None, colore
     lista_bande = None
     if bande_selezionate:
         lista_bande = bd.get_gruppi_funzionali_selezionati(bande_selezionate)
-    
     
     # Ciclo for per modificare le bande singole (quelle larghe 2)
     # per allargarle come da input slider utente

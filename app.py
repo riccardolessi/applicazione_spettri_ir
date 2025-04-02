@@ -98,7 +98,9 @@ def server(input, output, session):
 
     test_server(
         "test_ui",
-        test = test
+        test = test,
+        spettri = spettri,
+        bande_def = bande_def
     )
 
 app = App(app_ui, server)

@@ -13,61 +13,127 @@ import itertools
 @module.ui
 def test_ui():
     return(
-        ui.input_numeric(
-            "id_molecola",
-            "ID Molecola",
-            1, min = 1, max = 1000
-        ),
-        ui.input_text(
-            "smiles",
-            "Inserisci lo Smiles della molecola"
-        ),
-        ui.input_text(
-            "smarts_gruppo",
-            "Inserisci lo Smarts della parte di molecola di interesse"
-        ),
-        ui.input_numeric(
-            "min",
-            "Inserisci minimo della banda",
-            1, min = 1, max = 4000
-        ),
-        ui.input_numeric(
-            "max",
-            "Inserisci massimo della banda",
-            1, min = 1, max = 4000
-        ),
-        ui.input_action_button(
-            "visualizza_molecola",
-            "Visualizza la molecola"
-        ),
-        ui.output_ui("molecule_viewer"),
-        ui.output_plot("spettro_selezionato_plot")
+        ui.card(
+            ui.layout_sidebar(
+                ui.sidebar(
+                    ui.input_select(
+                        "select_molecola",
+                        "Seleziona la molecola",
+                        choices = []
+                    ),
+                    ui.input_text(
+                        "smarts_gruppo",
+                        "Seleziona lo Smarts"
+                    ),
+                    ui.input_checkbox_group(  
+                        "selectize_bande",  
+                        "Seleziona i gruppi da visualizzare:",
+                        choices = [],  
+                    ),
+                    ui.input_checkbox_group(  
+                        "selectize_bande_new",  
+                        "Seleziona le bande da visualizzare:",
+                        choices = [],  
+                    ),
+                    ui.input_slider(
+                        "slider_bande",
+                        "Seleziona la larghezza delle bande singole",
+                        0, 50, 10
+                    ),
+                    ui.input_action_button(
+                        "visualizza_molecola",
+                        "Visualizza la molecola"
+                    ),
+                ),
+                ui.layout_columns(
+                    ui.output_plot(
+                        "spettro_selezionato_plot",
+                        fill = False
+                    ),
+                    ui.output_ui("molecule_viewer"),
+                )
+            )
+            
+        )
     )
 
 @module.server
-def test_server(input, output, session, test):
+def test_server(input, output, session, test, spettri, bande_def):
+    lista_molecole = reactive.value([])
+    lista_bande = reactive.value([])
+
+    @reactive.effect()
+    def _():
+        lista_molecole.set(spettri.get_spettri(True))
+        lista_bande.set(bande_def.get_all_gruppi_funzionali())
+
+        ui.update_select(
+            "select_molecola",
+            choices = {f"{id_}": f"{name}" for id_, name, smiles in lista_molecole()}
+        )
 
     @render.ui
     @reactive.event(input.visualizza_molecola)
     def molecule_viewer():
         # Prendi il valore SMILES dall'input dell'utente
-        molecola = "CC(=O)OC1=CC=CC=C1C(=O)O"
-        smarts = input.smarts_gruppo()
+        id_molecola = int(input.select_molecola())
+        
+        molecola = next((mol[2] for mol in lista_molecole() if mol[0] == id_molecola), None)
+        smarts = ""
+        if input.selectize_bande_new():
+            id_banda = int(input.selectize_bande_new()[0]) # Tuple ('2',) diventa 2
 
+            smarts = next((banda[6] for banda in lista_bande() if banda[0] == id_banda ), "")
+        
         # Genera la visualizzazione della molecola con evidenziazione
         svg_content = generate_2d_image_with_highlight(molecola, smarts)
         
         # Restituisci l'SVG come HTML
         return ui.HTML(svg_content)
     
+
+    # Crea la checkbox per vedere le bande dei gruppi funzionali
+    # nella schermata di visualizzazione
+    @reactive.effect
+    def selectize_bande():
+        #gruppi_funzionali = bande_def.get_gruppi_funzionali(False)
+        gruppi_funzionali = bande_def.get_gruppi_new()
+
+        # Converte da tuple a dizionario
+        opzioni_bande = {x[0]: x[1] for x in gruppi_funzionali}
+        
+        ui.update_checkbox_group("selectize_bande", choices=opzioni_bande)
+
+    # TEST
+    @reactive.effect
+    @reactive.event(input.selectize_bande)
+    def selectize_bande_new():
+        gruppi_funzionali = input.selectize_bande()
+
+        bande_gruppi = bande_def.get_gruppi_funzionali_selezionati_new(gruppi_funzionali)
+        
+        ui.update_checkbox_group("selectize_bande_new", choices=bande_gruppi)
+
+
     @render.plot
     @reactive.event(input.visualizza_molecola)
     def spettro_selezionato_plot():
-        min = input.min()
-        max = input.max()
-        banda = [min, max]
-        fig = test.pippo(input.id_molecola(), banda)
-        return fig
+        id_molecola = input.select_molecola()
+
+        spettro_molecola = spettri.get_spettro(id_molecola)
+
+        # Recupera le bande selezionate
+        bande_selezionate = input.selectize_bande_new()
+        
+        # Genera e restituisce il grafico
+        return spettri.render_plot(
+            spettro_molecola, 
+            bande_selezionate, 
+            None,
+            "red", 
+            None,
+            input.slider_bande()
+        )
 
 
     # Funzione per generare l'immagine 2D con evidenziazione
@@ -78,7 +144,7 @@ def test_server(input, output, session, test):
             return "Invalid SMILES string"
         
         if not smarts:
-            d = rdMolDraw2D.MolDraw2DSVG(500, 500)
+            d = rdMolDraw2D.MolDraw2DSVG(200, 200)
             rdMolDraw2D.PrepareAndDrawMolecule(d, mol)
             svg = d.GetDrawingText()
             return svg
@@ -103,7 +169,7 @@ def test_server(input, output, session, test):
         
         hit_ats = list(itertools.chain(*hit_ats))
         # Crea un oggetto MolDraw2DSVG per generare il disegno SVG
-        d = rdMolDraw2D.MolDraw2DSVG(500, 500)  # Impostiamo una dimensione di 500x500 px per il disegno
+        d = rdMolDraw2D.MolDraw2DSVG(200, 200)  # Impostiamo una dimensione di 500x500 px per il disegno
         
         # Prepara e disegna la molecola, evidenziando gli atomi e i legami
         rdMolDraw2D.PrepareAndDrawMolecule(d, mol, highlightAtoms=hit_ats, highlightBonds=hit_bonds)
@@ -123,4 +189,3 @@ def convertTupleToList(tuple):
         newList.append(x)
 
     return newList
-

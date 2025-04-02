@@ -82,3 +82,12 @@ def get_gruppi_funzionali_selezionati_new(lista_id):
     output = {banda[0]: banda[1] for banda in bande}
 
     return output
+
+def get_all_gruppi_funzionali():
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT * FROM bande_gruppi_funzionali")
+    bande = cursor.fetchall()
+    conn.close()
+    
+    return bande
