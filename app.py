@@ -5,6 +5,7 @@ from lib import bande_gruppi_funzionali as bande_def
 from lib import fonti
 from lib import db
 from lib import test
+from lib import test2
 from modules.gruppi_funzionali import *
 from modules.visualizza import *
 from modules.inserimento import *
@@ -13,6 +14,7 @@ from modules.query import *
 from modules.request import *
 from modules.inserimento_multiplo import *
 from modules.test import *
+from modules.query_2 import *
 
 app_ui = ui.page_navbar(
     ui.nav_panel(
@@ -46,6 +48,10 @@ app_ui = ui.page_navbar(
     ui.nav_panel(
         "Test Analisi Molecola",
         test_ui("test_ui")
+    ),
+    ui.nav_panel(
+        "Modifica DB",
+        insert_db_ui("insert_db")
     ),
     
 
@@ -101,6 +107,11 @@ def server(input, output, session):
         test = test,
         spettri = spettri,
         bande_def = bande_def
+    )
+
+    insert_db_server(
+        "insert_db",
+        test = test2
     )
 
 app = App(app_ui, server)
