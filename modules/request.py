@@ -29,8 +29,11 @@ def request_server(input, output, session, bande_def, spettri):
     @render.text
     @reactive.event(input.cerca_molecola)
     def result():
-        data = get_api_data(input.input())
-        return str(data)
+        if input.input():
+            data = get_api_data(input.input())
+            return str(data)
+        else:
+            return str("Non è stata inserita nessuna molecola")
     
     @render.ui
     @reactive.event(input.visualizza_molecola)
