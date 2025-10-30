@@ -48,10 +48,17 @@ def visualizza_ui():
                     }
                 ),
                 ),
-                ui.input_checkbox_group(  
-                    "selectize_bande",  
-                    "Seleziona i gruppi da visualizzare:",
-                    choices = [],  
+                ui.input_checkbox(
+                    "visualizza_bande",
+                    "Visualizza le bande"
+                ),
+                ui.panel_conditional(
+                    "input.visualizza_bande",
+                    ui.input_checkbox_group(  
+                        "selectize_bande",  
+                        "Seleziona i gruppi da visualizzare:",
+                        choices = [],  
+                    ),
                 ),
                 ui.input_action_button(
                     "visualizza_molecola",

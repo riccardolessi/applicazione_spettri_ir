@@ -84,7 +84,7 @@ def test_server(input, output, session, test, spettri, bande_def):
             id_banda = int(input.selectize_bande_new()[0]) # Tuple ('2',) diventa 2
 
             smarts = next((banda[6] for banda in lista_bande() if banda[0] == id_banda ), "")
-        
+            
         # Genera la visualizzazione della molecola con evidenziazione
         svg_content = generate_2d_image_with_highlight(molecola, smarts)
         
@@ -138,6 +138,7 @@ def test_server(input, output, session, test, spettri, bande_def):
 
     # Funzione per generare l'immagine 2D con evidenziazione
     def generate_2d_image_with_highlight(smiles: str, smarts):
+        print(smarts)
         # Creiamo la molecola da SMILES
         mol = Chem.MolFromSmiles(smiles)
         if mol is None:

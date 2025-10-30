@@ -18,15 +18,15 @@ from modules.query_2 import *
 
 app_ui = ui.page_navbar(
     ui.nav_panel(
-        "Inserimento",
+        "Data Entry",
         inserimento_ui("inserimento_ui"),
     ),
     ui.nav_panel(
-        "Inserimento Multiplo",
+        "Multiple Entries",
         inserimento_multiplo_ui("inserimento_multiplo_ui")
     ),
     ui.nav_panel(
-        "Visualizzazione",
+        "View Molecule",
         visualizza_ui("visualizza_ui"),
     ),
     ui.nav_panel(
@@ -46,16 +46,16 @@ app_ui = ui.page_navbar(
         request_ui("request_ui"),
     ),
     ui.nav_panel(
-        "Test Analisi Molecola",
+        "Molecule Analysis",
         test_ui("test_ui")
     ),
     ui.nav_panel(
-        "Modifica DB",
+        "Edit DB",
         insert_db_ui("insert_db")
     ),
     
 
-    title="App with navbar",
+    title="IR Spectrum Analysis App",
     id="page"
 )
 
