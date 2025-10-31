@@ -4,6 +4,7 @@ pandas
 matplotlib
 shinywidgets
 jcamp
+requests
 rdkit
 numpy
 scipy
