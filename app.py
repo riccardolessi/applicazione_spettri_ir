@@ -18,40 +18,78 @@ from modules.query_2 import *
 
 app_ui = ui.page_navbar(
     ui.nav_panel(
-        "Data Entry",
+        "Inserimento Spettro",
         inserimento_ui("inserimento_ui"),
     ),
     ui.nav_panel(
-        "Multiple Entries",
+        "Inserimento Multiplo Spettri",
         inserimento_multiplo_ui("inserimento_multiplo_ui")
     ),
     ui.nav_panel(
-        "View Molecule",
+        "Visualizza Spettri",
         visualizza_ui("visualizza_ui"),
     ),
+    # ui.nav_panel(
+    #     "Visualizza molecola",
+    #     singola_molecola_ui("singola_molecola_ui")
+    # ),
+    # ui.nav_panel(
+    #     "Gruppi funzionali",
+    #     gruppi_funzionali_ui("gruppi_funzionali_ui"),
+    # ),
+    # ui.nav_panel(
+    #     "Query DB",
+    #     query_output_ui("query_output_ui"),
+    # ),
+    # ui.nav_panel(
+    #     "Richieste Pub Chem",
+    #     request_ui("request_ui"),
+    # ),
     ui.nav_panel(
-        "Visualizza molecola",
-        singola_molecola_ui("singola_molecola_ui")
-    ),
-    ui.nav_panel(
-        "Gruppi funzionali",
-        gruppi_funzionali_ui("gruppi_funzionali_ui"),
-    ),
-    ui.nav_panel(
-        "Query DB",
-        query_output_ui("query_output_ui"),
-    ),
-    ui.nav_panel(
-        "Richieste Pub Chem",
-        request_ui("request_ui"),
-    ),
-    ui.nav_panel(
-        "Molecule Analysis",
+        "Analisi molecolare",
         test_ui("test_ui")
     ),
+    # ui.nav_panel(
+    #     "Edit DB",
+    #     insert_db_ui("insert_db")
+    # ),
     ui.nav_panel(
-        "Edit DB",
-        insert_db_ui("insert_db")
+        "Similarità Molecolare",
+        ui.input_select(
+            "select_molecola",
+            "Seleziona la molecola da visualizzare",
+            choices = []
+        ),
+        ui.input_radio_buttons(  
+            "radio",  
+            "Seleziona un'opzione",  
+            {"1": "Seleziona il numero di molecole simili", "2": "Seleziona un threshold di similarità"},  
+        ),  
+        ui.panel_conditional(
+            "input.radio == '1'",
+            ui.input_slider(
+                "slider1",
+                "Seleziona il numero di molecole simili da trovare",
+                min = 1,
+                max = 20,
+                value = 3
+            )
+        ),
+        ui.panel_conditional(
+            "input.radio == '2'",
+            ui.input_slider(
+                "slider2",
+                "Seleziona threshold di similarità",
+                min = 0,
+                max = 5,
+                step = 0.1,
+                value = 0.1
+            )
+        ),
+        ui.input_action_button(
+            "calcola_similarita",
+            "Calcola similarità"
+        ),
     ),
     
 
@@ -113,5 +151,19 @@ def server(input, output, session):
         "insert_db",
         test = test2
     )
+
+    # Aggiorna il dropdown con gli spettri disponibili
+    @reactive.effect
+    def select_molecola():
+        spettri_disponibili = spettri.get_spettri()
+
+        ui.update_select("select_molecola", choices=spettri_disponibili)
+        ui.update_select("select_confronto", choices=spettri_disponibili)
+
+
+    @reactive.event(input.calcola_similarita)
+    def _():
+        return None
+    
 
 app = App(app_ui, server)

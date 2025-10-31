@@ -4,3 +4,7 @@ pandas
 matplotlib
 shinywidgets
 jcamp
+rdkit
+numpy
+scipy
+scikit-learn

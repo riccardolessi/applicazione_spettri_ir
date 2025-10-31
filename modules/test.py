@@ -21,10 +21,10 @@ def test_ui():
                         "Seleziona la molecola",
                         choices = []
                     ),
-                    ui.input_text(
-                        "smarts_gruppo",
-                        "Seleziona lo Smarts"
-                    ),
+                    # ui.input_text(
+                    #     "smarts_gruppo",
+                    #     "Seleziona lo Smarts"
+                    # ),
                     ui.input_checkbox_group(  
                         "selectize_bande",  
                         "Seleziona i gruppi da visualizzare:",
