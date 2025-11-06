@@ -6,9 +6,9 @@ from datetime import datetime, date
 @module.ui
 def inserimento_ui():
     return (
-        ui.input_file("file_upload", "Upload the IR spectrum", multiple=False),
+        ui.input_file("file_upload", "Inserisci lo spettro", multiple=False),
         ui.output_ui("conditional"),
-        ui.input_action_button("save", "Save the spectrum"),
+        ui.input_action_button("save", "Salva lo spettro"),
         ui.output_plot("spettro_plot"),
         ui.output_text('info_molecola'),
         #ui.input_dark_mode(mode="dark"),

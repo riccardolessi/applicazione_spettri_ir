@@ -15,6 +15,7 @@ from modules.request import *
 from modules.inserimento_multiplo import *
 from modules.test import *
 from modules.query_2 import *
+from prova_ml import calcola_similarita
 
 app_ui = ui.page_navbar(
     ui.nav_panel(
@@ -55,45 +56,50 @@ app_ui = ui.page_navbar(
     # ),
     ui.nav_panel(
         "Similarità Molecolare",
-        ui.input_select(
-            "select_molecola",
-            "Seleziona la molecola da visualizzare",
-            choices = []
-        ),
-        ui.input_radio_buttons(  
-            "radio",  
-            "Seleziona un'opzione",  
-            {"1": "Seleziona il numero di molecole simili", "2": "Seleziona un threshold di similarità"},  
-        ),  
-        ui.panel_conditional(
-            "input.radio == '1'",
-            ui.input_slider(
-                "slider1",
-                "Seleziona il numero di molecole simili da trovare",
-                min = 1,
-                max = 20,
-                value = 3
-            )
-        ),
-        ui.panel_conditional(
-            "input.radio == '2'",
-            ui.input_slider(
-                "slider2",
-                "Seleziona threshold di similarità",
-                min = 0,
-                max = 5,
-                step = 0.1,
-                value = 0.1
-            )
-        ),
-        ui.input_action_button(
-            "calcola_similarita",
-            "Calcola similarità"
-        ),
+        ui.layout_sidebar(
+            ui.sidebar(
+                ui.input_select(
+                    "select_molecola",
+                    "Seleziona la molecola da visualizzare",
+                    choices = []
+                ),
+                ui.input_radio_buttons(  
+                    "radio",  
+                    "Seleziona un'opzione",  
+                    {"1": "Seleziona il numero di molecole simili", "2": "Seleziona un threshold di similarità"},  
+                ),  
+                ui.panel_conditional(
+                    "input.radio == '1'",
+                    ui.input_slider(
+                        "slider1",
+                        "Seleziona il numero di molecole simili da trovare",
+                        min = 1,
+                        max = 20,
+                        value = 3
+                    )
+                ),
+                ui.panel_conditional(
+                    "input.radio == '2'",
+                    ui.input_slider(
+                        "slider2",
+                        "Seleziona threshold di similarità",
+                        min = 0,
+                        max = 5,
+                        step = 0.1,
+                        value = 0.1
+                    )
+                ),
+                ui.input_action_button(
+                    "calcola_similarita",
+                    "Calcola similarità"
+                ),
+            ),
+            ui.output_data_frame("tabella_risultati")
+        )
     ),
     
 
-    title="IR Spectrum Analysis App",
+    title="App Analisi Spettri IR",
     id="page"
 )
 
@@ -152,18 +158,31 @@ def server(input, output, session):
         test = test2
     )
 
-    # Aggiorna il dropdown con gli spettri disponibili
+    # Variabile reattiva per contenere i risultati
+    risultati_reactive = reactive.Value(None)
+
     @reactive.effect
-    def select_molecola():
+    @reactive.event(input.calcola_similarita)
+    def _():
+        numeri_simili = int(input.slider1())
+        risultati = calcola_similarita(numeri_simili + 1)
+        df = pd.DataFrame(risultati)
+        df = df.drop(df.index[0]).reset_index(drop=True)
+        risultati_reactive.set(df[["nome", "distanza"]])
+    
+
+    @render.data_frame
+    def tabella_risultati():
+        df = risultati_reactive.get()
+        if df is None:
+            return pd.DataFrame()
+        return df
+
+
+    @reactive.effect
+    def _():
         spettri_disponibili = spettri.get_spettri()
 
         ui.update_select("select_molecola", choices=spettri_disponibili)
-        ui.update_select("select_confronto", choices=spettri_disponibili)
-
-
-    @reactive.event(input.calcola_similarita)
-    def _():
-        return None
-    
 
 app = App(app_ui, server)

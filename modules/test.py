@@ -25,6 +25,11 @@ def test_ui():
                     #     "smarts_gruppo",
                     #     "Seleziona lo Smarts"
                     # ),
+                    ui.input_select(
+                        "select_fonte",
+                        "Seleziona la fonte delle bande",
+                        choices = ["Cavrini et al."]
+                    ),
                     ui.input_checkbox_group(  
                         "selectize_bande",  
                         "Seleziona i gruppi da visualizzare:",

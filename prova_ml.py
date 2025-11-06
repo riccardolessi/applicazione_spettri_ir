@@ -66,7 +66,7 @@ print("Shape y:", y.shape)  # es: (100,)
 # ==============================
 model = Pipeline([
     ("scaler", StandardScaler()),
-    ("nn", NearestNeighbors(n_neighbors=10, metric="cosine"))
+    ("nn", NearestNeighbors(n_neighbors=50, metric="cosine"))
 ])
 
 # ==============================
@@ -77,6 +77,7 @@ model.fit(X)
 # ==============================
 # 5. Query spettro nuovo
 # ==============================
+
 # esempio: uso il primo spettro del dataset come query
 nuovo_spettro = X[6]
 
@@ -99,3 +100,54 @@ id_simili = y[indices[0]]
 print("\nTop-10 molecole più simili:")
 for rank, (nome_mol, id_mol, dist) in enumerate(zip(nomi_simili, id_simili, distances[0]), start=1):
     print(f"{rank}) Molecola: {nome_mol} [ID {id_mol}]  |  Distanza = {dist:.4f}")
+
+# ==============================
+# 6. Funzione per calcolare similarità
+# ==============================
+
+def calcola_similarita(numero_simili: int):
+    conn = sqlite3.connect("spettri.db")
+    cursor = conn.cursor()
+    rows = cursor.execute("SELECT id, nome, dati FROM spettri").fetchall()
+    conn.close()
+
+    df = pd.DataFrame(rows, columns=["id", "nome", "dati"])
+    X, y, nomi_validi = [], [], []
+
+    for id_val, nome_val, dati_val in zip(df["id"], df['nome'], df["dati"]):
+        if not dati_val:
+            continue
+        try:
+            spettro_dict = json.loads(dati_val)
+        except json.JSONDecodeError:
+            continue
+        intensita = spettro_dict.get("y", None)
+        if intensita is None or len(intensita) != 7054:
+            continue
+        X.append(np.array(intensita, dtype=float))
+        y.append(id_val)
+        nomi_validi.append(nome_val)
+
+    X = np.vstack(X)
+    y = np.array(y)
+    nomi_validi = np.array(nomi_validi)
+
+    model = Pipeline([
+        ("scaler", StandardScaler()),
+        ("nn", NearestNeighbors(n_neighbors= numero_simili, metric="cosine"))
+    ])
+    model.fit(X)
+
+    nuovo_spettro = X[6].reshape(1, -1)
+    print(f"Molecola query: {nomi_validi[6]} [ID {y[6]}]")
+    X_transf = model.named_steps["scaler"].transform(nuovo_spettro)
+    distances, indices = model.named_steps["nn"].kneighbors(X_transf)
+
+    risultati = []
+    for nome, idx, dist in zip(nomi_validi[indices[0]], y[indices[0]], distances[0]):
+        risultati.append({"nome": nome, "id": int(idx), "distanza": float(dist)})
+
+    for obj in risultati:
+        obj["distanza"] = round(obj["distanza"], 3)
+
+    return risultati
