@@ -1,13 +1,7 @@
 from shiny import module, ui, reactive, render
-
-
 from rdkit import Chem
 from rdkit.Chem import Draw
 from rdkit.Chem.Draw import rdMolDraw2D
-from PIL import Image
-import io
-import base64
-from htmltools import HTML
 import itertools
 
 @module.ui
@@ -21,10 +15,6 @@ def test_ui():
                         "Seleziona la molecola",
                         choices = []
                     ),
-                    # ui.input_text(
-                    #     "smarts_gruppo",
-                    #     "Seleziona lo Smarts"
-                    # ),
                     ui.input_select(
                         "select_fonte",
                         "Seleziona la fonte delle bande",

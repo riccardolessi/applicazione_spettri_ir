@@ -59,6 +59,16 @@ def visualizza_ui():
                         "Seleziona i gruppi da visualizzare:",
                         choices = [],  
                     ),
+                    # ui.input_checkbox_group(  
+                    #     "selectize_bande_new",  
+                    #     "Seleziona le bande da visualizzare:",
+                    #     choices = [],  
+                    # ),
+                    # ui.input_slider(
+                    #     "slider_bande",
+                    #     "Seleziona la larghezza delle bande singole",
+                    #     0, 50, 10
+                    # ),
                 ),
                 ui.input_action_button(
                     "visualizza_molecola",
@@ -66,8 +76,7 @@ def visualizza_ui():
                 )
             ),
             ui.output_plot("spettro_selezionato_plot"),
-        ),
-        ui.output_image("image"),
+        )
     )
 
 @module.server
@@ -111,12 +120,6 @@ def visualizza_server(input, output, session, bande_def, spettri):
 
         # Recupera le bande selezionate
         bande_selezionate = input.selectize_bande()
-        
-        # Controlla se esiste un'immagine associata alla molecola e la renderizza
-        @render.image
-        def image():
-            img = render_molecola_image(spettro_molecola)
-            return img
 
         # Recupera la molecola di confronto, se selezionata
         spettro_confronto = spettri.get_spettro(input.select_confronto()) if input.confronto() else None
@@ -136,20 +139,3 @@ def visualizza_server(input, output, session, bande_def, spettri):
     # Per verificare se c'è il file dell'immagine della molecola
     def file_presente(cartella, nome_file):
         return any(f.stem == nome_file for f in Path(cartella).iterdir())
-
-    def render_molecola_image(spettro):
-        """Verifica la presenza di un'immagine associata alla molecola e la visualizza."""
-        
-        cartella_immagini = here / "images"
-        nome_molecola = spettro['metadati']['molecola'].split("/")[0]
-        file_immagine = file_presente(cartella_immagini, nome_molecola)
-
-        if file_immagine:
-            return {"src": here / f"images/{nome_molecola}.png"}
-        
-        return None
-
-    # Evita che l'immagine rimanga in attesa in caricamento
-    @render.image
-    def image():
-        return None
