@@ -1,6 +1,7 @@
 from shiny import module, ui, reactive, render
 import pandas as pd
 from prova_ml import *
+
 @module.ui
 def similarita_ui():
     return(

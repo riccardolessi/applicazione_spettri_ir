@@ -142,7 +142,7 @@ def test_server(input, output, session, test, spettri, bande_def):
             return "Invalid SMILES string"
         
         if not smarts:
-            d = rdMolDraw2D.MolDraw2DSVG(200, 200)
+            d = rdMolDraw2D.MolDraw2DSVG(400, 400)
             rdMolDraw2D.PrepareAndDrawMolecule(d, mol)
             svg = d.GetDrawingText()
             return svg
