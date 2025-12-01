@@ -25,6 +25,7 @@ def setup_db():
         gruppo_funzionale TEXT NOT NULL,
         min INTEGER NOT NULL,
         max INTEGER NOT NULL,
+        smarts TEXT,
         id_gruppo INT,
         FOREIGN KEY (id_gruppo) REFERENCES gruppi_funzionali(id)
         fonte_bande INT,

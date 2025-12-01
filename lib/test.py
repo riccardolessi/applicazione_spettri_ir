@@ -31,7 +31,6 @@ def render_plot(dati, bande_selezionate = []):
     spettro_data = json.loads(dati)
         
     if 'x' not in spettro_data or 'y' not in spettro_data:
-        print("ERROREEEEE!!!!!!!!!!!!!")
         return None  # Evita errori se il formato è sbagliato
 
     # Estrae i dati dell'asse x e y

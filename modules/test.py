@@ -77,8 +77,10 @@ def test_server(input, output, session, test, spettri, bande_def):
         smarts = ""
         if input.selectize_bande_new():
             id_banda = int(input.selectize_bande_new()[0]) # Tuple ('2',) diventa 2
-
-            smarts = next((banda[6] for banda in lista_bande() if banda[0] == id_banda ), "")
+            
+            for banda in lista_bande():
+                if int(banda[0]) == int(id_banda):
+                    smarts = banda[6]
             
         # Genera la visualizzazione della molecola con evidenziazione
         svg_content = generate_2d_image_with_highlight(molecola, smarts)

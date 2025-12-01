@@ -31,10 +31,10 @@ app_ui = ui.page_navbar(
         "Visualizza Spettri",
         visualizza_ui("visualizza_ui"),
     ),
-    # ui.nav_panel(
-    #     "Visualizza molecola",
-    #     singola_molecola_ui("singola_molecola_ui")
-    # ),
+    ui.nav_panel(
+        "Visualizza molecola",
+        singola_molecola_ui("singola_molecola_ui")
+    ),
     # ui.nav_panel(
     #     "Gruppi funzionali",
     #     gruppi_funzionali_ui("gruppi_funzionali_ui"),
