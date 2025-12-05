@@ -142,7 +142,7 @@ def test_server(input, output, session, test, spettri, bande_def):
             return "Invalid SMILES string"
         
         if not smarts:
-            d = rdMolDraw2D.MolDraw2DSVG(200, 200)
+            d = rdMolDraw2D.MolDraw2DSVG(400, 400)
             rdMolDraw2D.PrepareAndDrawMolecule(d, mol)
             svg = d.GetDrawingText()
             return svg
@@ -167,7 +167,7 @@ def test_server(input, output, session, test, spettri, bande_def):
         
         hit_ats = list(itertools.chain(*hit_ats))
         # Crea un oggetto MolDraw2DSVG per generare il disegno SVG
-        d = rdMolDraw2D.MolDraw2DSVG(200, 200)  # Impostiamo una dimensione di 500x500 px per il disegno
+        d = rdMolDraw2D.MolDraw2DSVG(400, 400)  # Impostiamo una dimensione di 500x500 px per il disegno
         
         # Prepara e disegna la molecola, evidenziando gli atomi e i legami
         rdMolDraw2D.PrepareAndDrawMolecule(d, mol, highlightAtoms=hit_ats, highlightBonds=hit_bonds)

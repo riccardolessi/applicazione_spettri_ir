@@ -13,10 +13,10 @@ from modules.singola_molecola import *
 from modules.query import *
 from modules.request import *
 from modules.inserimento_multiplo import *
-from modules.test import *
+from modules.analisi_molecola import *
 from modules.query_2 import *
 from modules.similarita import *
-from prova_ml import calcola_similarita
+from modello_ml import calcola_similarita
 
 app_ui = ui.page_navbar(
     ui.nav_panel(
