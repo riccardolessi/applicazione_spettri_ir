@@ -5,3 +5,6 @@ partials/
 lib/__pychache__/
 modules/__pychache__/
 shiny/
+venv/
+documentazione/
+analisi_codice/

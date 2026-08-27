@@ -18,17 +18,19 @@ from modules.query_2 import *
 from modules.similarita import *
 from modello_ml import calcola_similarita
 
+header_content = ui.output_image("centenario_principale", height="60px")
+
 app_ui = ui.page_navbar(
     ui.nav_panel(
         "Inserimento Spettro",
         inserimento_ui("inserimento_ui"),
     ),
+    # ui.nav_panel(
+    #     "Inserimento Multiplo Spettri",
+    #     inserimento_multiplo_ui("inserimento_multiplo_ui")
+    # ),
     ui.nav_panel(
-        "Inserimento Multiplo Spettri",
-        inserimento_multiplo_ui("inserimento_multiplo_ui")
-    ),
-    ui.nav_panel(
-        "Visualizza Spettri",
+        "Confronto Spettri",
         visualizza_ui("visualizza_ui"),
     ),
     ui.nav_panel(
@@ -62,10 +64,17 @@ app_ui = ui.page_navbar(
     
 
     title="App Analisi Spettri IR",
+    header=header_content,  
+    footer="footer_content",
     id="page"
 )
 
 def server(input, output, session):
+    @render.image
+    def centenario_principale():
+        img = {"src": here / "centenario_principale.png", "style": "padding: 10px"}
+        return img
+
     inserimento_server(
         "inserimento_ui",
         Spettro = Spettro,

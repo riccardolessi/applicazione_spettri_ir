@@ -61,15 +61,23 @@ def salva_gruppo_funzionale(nome_gruppo, smiles):
     except sqlite3.Error as e:
         return f"Errore: {e}"
     
-def salva_banda_gruppo_funzionale(nome_banda, min, max, id_gruppo_funzionale, fonte_banda):
+def salva_banda_gruppo_funzionale(nome_banda, min, max, id_gruppo_funzionale, fonte_banda, smarts=None):
+    """
+    Inserisce una banda di assorbimento.
+
+    smarts e' il pattern della sottostruttura che la banda identifica: e' il
+    campo su cui si basa l'evidenziazione degli atomi nella scheda "Analisi
+    molecolare". Una banda senza SMARTS viene comunque salvata, ma li' non
+    evidenzia nulla.
+    """
     try:
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
         cursor.execute("""
             INSERT INTO bande_gruppi_funzionali
-            (gruppo_funzionale, min, max, id_gruppo, fonte_bande)
-            VALUES (?, ?, ?, ?, ?)
-        """, (nome_banda, min, max, id_gruppo_funzionale, fonte_banda))
+            (gruppo_funzionale, min, max, id_gruppo, fonte_bande, smarts)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (nome_banda, min, max, id_gruppo_funzionale, fonte_banda, smarts or None))
 
         conn.commit()
         conn.close()

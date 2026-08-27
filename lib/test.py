@@ -51,9 +51,3 @@ def render_plot(dati, bande_selezionate = []):
     ax.invert_xaxis()
 
     return fig
-
-def pippo(id_spettro, banda):
-    molecola = get_spettro(id_spettro)
-    plot = render_plot(molecola[1], banda)
-
-    return plot
